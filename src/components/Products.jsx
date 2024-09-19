@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 function Products() {
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [page, setPage] = useState(3);
+	const [page, setPage] = useState(12);
 
 	useEffect(() => {
 		fetch(`https://dummyjson.com/products?limit=${page}`)
@@ -28,6 +28,10 @@ function Products() {
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll);
+
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
 	}, []);
 
 	console.log(products);
