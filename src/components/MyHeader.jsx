@@ -25,14 +25,16 @@ function MyHeader() {
 				</nav>
 				<div className="user-cart flex items-center gap-3">
 					<button>Login</button>
-					<Badge count={cart.length}>
-						<ShoppingCartOutlined
-							style={{
-								fontSize: 30,
-								color: "blue",
-							}}
-						/>
-					</Badge>
+					<Link to={"/order"}>
+						<Badge count={cart.length}>
+							<ShoppingCartOutlined
+								style={{
+									fontSize: 30,
+									color: "blue",
+								}}
+							/>
+						</Badge>
+					</Link>
 				</div>
 			</div>
 		</header>
