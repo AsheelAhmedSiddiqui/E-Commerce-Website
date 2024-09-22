@@ -34,8 +34,6 @@ function Products() {
 		};
 	}, []);
 
-	console.log(products);
-
 	return (
 		<>
 			<MyHeader />
