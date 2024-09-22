@@ -17,7 +17,7 @@ function ProductCard(product) {
 					)}
 					<Image
 						width={300}
-						className="mx-auto hidden h-full dark:block"
+						className="mx-auto h-full"
 						preview={false}
 						src={data.thumbnail}
 						alt={data.description}

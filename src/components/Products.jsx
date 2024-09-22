@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MyHeader from "./MyHeader";
 import ProductCard from "./ProductCard";
+import { Flex, Spin } from "antd";
 
 function Products() {
 	const [products, setProducts] = useState([]);
@@ -37,13 +38,22 @@ function Products() {
 	return (
 		<>
 			<MyHeader />
-			<section className="mt-10 grid grid-cols-3 gap-5 w-[1100px] mx-auto">
-				{loading ? (
-					<h1>Loading....</h1>
-				) : (
-					products.map((data) => <ProductCard data={data} key={data.id} />)
-				)}
-			</section>
+
+			{loading ? (
+				<Flex
+					align="center"
+					className="flex items-center justify-center h-screen"
+					gap="middle"
+				>
+					<Spin size="large" />
+				</Flex>
+			) : (
+				<section className="mt-10 grid grid-cols-3 gap-5 w-[1100px] mx-auto">
+					{products.map((data) => (
+						<ProductCard data={data} key={data.id} />
+					))}
+				</section>
+			)}
 		</>
 	);
 }

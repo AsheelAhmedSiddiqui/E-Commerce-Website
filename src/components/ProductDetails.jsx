@@ -44,11 +44,9 @@ function ProductDetails() {
 			{loading ? (
 				<Flex
 					align="center"
-					className="flex items-center justify-center"
+					className="flex items-center justify-center h-screen"
 					gap="middle"
 				>
-					<Spin size="small" />
-					<Spin />
 					<Spin size="large" />
 				</Flex>
 			) : notFound ? (
