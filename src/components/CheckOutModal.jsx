@@ -2,12 +2,41 @@ import { Button, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { auth } from "../utils/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 function CheckOutModal({ isOpen, handleConfirm, handleCancel }) {
 	// orderConfirm as props
 	const [guestUser, setGuestUser] = useState(false);
 	useEffect(() => {
 		return setGuestUser(false);
 	}, []);
+
+	// console.log(GoogleAuthProvider);
+
+	const googleSign = () => {
+		const provider = new GoogleAuthProvider();
+		provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+		signInWithPopup(auth, provider)
+			.then((result) => {
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				const credential = GoogleAuthProvider.credentialFromResult(result);
+				const token = credential.accessToken;
+				// The signed-in user info.
+				const user = result.user;
+				// IdP data available using getAdditionalUserInfo(result)
+				// ...
+			})
+			.catch((error) => {
+				// Handle Errors here.
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				// The email of the user's account used.
+				const email = error.customData.email;
+				// The AuthCredential type that was used.
+				const credential = GoogleAuthProvider.credentialFromError(error);
+				// ...
+				alert("error====> " + errorCode);
+			});
+	};
 
 	// console.log(getAuth(app));
 	const isLogin = auth.currentUser;
@@ -25,7 +54,7 @@ function CheckOutModal({ isOpen, handleConfirm, handleCancel }) {
 			>
 				{!isLogin && !guestUser && (
 					<div className="flex items-center justify-center flex-col gap-6 my-10">
-						<Button className="py-6 px-8">
+						<Button onClick={googleSign} className="py-6 px-8">
 							<GoogleOutlined /> Continue as Google
 						</Button>
 						<p>---------- OR ----------</p>
