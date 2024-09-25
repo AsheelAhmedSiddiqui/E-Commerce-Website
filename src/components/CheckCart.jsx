@@ -4,6 +4,7 @@ import CartItem from "./CartItem";
 import MyHeader from "./MyHeader";
 import { Button } from "antd";
 import CheckOutModal from "./CheckOutModal";
+import { auth } from "../utils/firebase";
 function CheckCart() {
 	const { cart } = useContext(CartContext);
 	const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,20 @@ function CheckCart() {
 		(value, items) => value + items.quantity * items.price,
 		0
 	);
+
+	const checkOutOrder = async (values) => {
+		const orderObj = {
+			...values,
+			totalItemsPrice,
+			totalItemsQuantity,
+			status: "pending",
+			user:{
+				userID: auth.currentUser ? auth.currentUser.uid,
+				userPhoto: auth.currentUser ? auth.currentUser.photoURL
+			}
+		};
+	};
+
 	return (
 		<>
 			<MyHeader />

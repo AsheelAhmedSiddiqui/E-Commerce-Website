@@ -1,9 +1,9 @@
-import { Button, Modal } from "antd";
+import { Button, Modal, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { auth } from "../utils/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-function CheckOutModal({ isOpen, handleConfirm, handleCancel }) {
+function CheckOutModal({ isOpen, handleConfirm, handleCancel, checkoutOrder }) {
 	// orderConfirm as props
 	const [guestUser, setGuestUser] = useState(false);
 	useEffect(() => {
@@ -34,12 +34,14 @@ function CheckOutModal({ isOpen, handleConfirm, handleCancel }) {
 				// The AuthCredential type that was used.
 				const credential = GoogleAuthProvider.credentialFromError(error);
 				// ...
-				alert("error====> " + errorCode);
+				alert("error====> " + errorCode + "\n" + "error====> " + errorMessage);
 			});
 	};
 
 	// console.log(getAuth(app));
 	const isLogin = auth.currentUser;
+	console.log(isLogin);
+
 	return (
 		<>
 			<Modal
@@ -61,29 +63,31 @@ function CheckOutModal({ isOpen, handleConfirm, handleCancel }) {
 						<Button className="py-6 px-8">Continue as Guest</Button>
 					</div>
 				)}
-				{isLogin ||
-					(guestUser && (
-						<Form onFinish={checkoutOrder} layout="vertical">
-							<Form.Item name={"username"} label={"Username"}>
-								<Input />
-							</Form.Item>
-							<Form.Item name={"email"} required label={"Email"}>
-								<Input type="email" />
-							</Form.Item>
-							<Form.Item name={"number"} required label={"Phone Number"}>
-								<Input type="number" />
-							</Form.Item>
-							<Form.Item required name={"address"} label={"Address"}>
-								<Input.TextArea placeholder="Address" />
-							</Form.Item>
 
-							<Form.Item>
-								<Button type="primary" htmlType="submit">
-									Submit
-								</Button>
-							</Form.Item>
-						</Form>
-					))}
+				{isLogin ? (
+					<Form onFinish={checkoutOrder} layout="vertical">
+						<Form.Item name={"username"} label={"Username"}>
+							<Input />
+						</Form.Item>
+						<Form.Item name={"email"} required label={"Email"}>
+							<Input type="email" />
+						</Form.Item>
+						<Form.Item name={"number"} required label={"Phone Number"}>
+							<Input type="number" />
+						</Form.Item>
+						<Form.Item required name={"address"} label={"Address"}>
+							<Input.TextArea placeholder="Address" />
+						</Form.Item>
+
+						<Form.Item>
+							<Button type="primary" htmlType="submit">
+								Submit
+							</Button>
+						</Form.Item>
+					</Form>
+				) : (
+					<h1>Hell</h1>
+				)}
 			</Modal>
 		</>
 	);
