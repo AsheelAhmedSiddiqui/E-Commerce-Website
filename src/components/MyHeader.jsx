@@ -3,8 +3,19 @@ import { Link } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase";
 function MyHeader() {
 	const { cart } = useContext(CartContext);
+	const logOut = () => {
+		signOut(auth)
+			.then(() => {
+				alert("succes fully sign out");
+			})
+			.catch((error) => {
+				alert("err===> " + error);
+			});
+	};
 	return (
 		<header>
 			<div className="container py-6  flex items-center justify-between w-3/4 mx-auto">
@@ -24,6 +35,7 @@ function MyHeader() {
 					<Link to={"/contact"}>Contact</Link>
 				</nav>
 				<div className="user-cart flex items-center gap-3">
+					<button onClick={logOut}>Sign Out</button>
 					<button>Login</button>
 					<Link to={"/order"}>
 						<Badge count={cart.length}>

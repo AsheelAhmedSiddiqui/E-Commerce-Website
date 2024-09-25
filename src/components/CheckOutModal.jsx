@@ -1,15 +1,34 @@
-import { Button, Modal, Form, Input } from "antd";
+import { Button, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { auth } from "../utils/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-function CheckOutModal({ isOpen, handleConfirm, handleCancel, checkoutOrder }) {
+function CheckOutModal({ isOpen, handleConfirm, handleCancel, checkOutOrder }) {
 	// orderConfirm as props
 	const [guestUser, setGuestUser] = useState(false);
 	useEffect(() => {
 		return setGuestUser(false);
 	}, []);
 
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		address: "",
+	});
+
+	const handleChange = (event) => {
+		const { name, value } = event.target;
+		setFormData({
+			...formData,
+			[name]: value,
+			[email]: value,
+			[phone]: value,
+			[address]: value,
+		});
+
+		console.log("update", formData);
+	};
 	// console.log(GoogleAuthProvider);
 
 	const googleSign = () => {
@@ -41,6 +60,7 @@ function CheckOutModal({ isOpen, handleConfirm, handleCancel, checkoutOrder }) {
 	// console.log(getAuth(app));
 	const isLogin = auth.currentUser;
 	console.log(isLogin);
+	// console.log((isLogin || guestUser));
 
 	return (
 		<>
@@ -60,33 +80,49 @@ function CheckOutModal({ isOpen, handleConfirm, handleCancel, checkoutOrder }) {
 							<GoogleOutlined /> Continue as Google
 						</Button>
 						<p>---------- OR ----------</p>
-						<Button className="py-6 px-8">Continue as Guest</Button>
+						<Button onClick={() => setGuestUser(true)} className="py-6 px-8">
+							Continue as Guest
+						</Button>
 					</div>
 				)}
 
-				{isLogin ? (
-					<Form onFinish={checkoutOrder} layout="vertical">
-						<Form.Item name={"username"} label={"Username"}>
-							<Input />
-						</Form.Item>
-						<Form.Item name={"email"} required label={"Email"}>
-							<Input type="email" />
-						</Form.Item>
-						<Form.Item name={"number"} required label={"Phone Number"}>
-							<Input type="number" />
-						</Form.Item>
-						<Form.Item required name={"address"} label={"Address"}>
-							<Input.TextArea placeholder="Address" />
-						</Form.Item>
-
-						<Form.Item>
-							<Button type="primary" htmlType="submit">
-								Submit
-							</Button>
-						</Form.Item>
-					</Form>
+				{isLogin || guestUser ? (
+					<form onSubmit={(e) => checkOutOrder(e, formData)}>
+						<label htmlFor="userName">Name</label>
+						<input
+							type="text"
+							onChange={handleChange}
+							defaultValue={isLogin?.displayName}
+							name="name"
+							id="userName"
+						/>
+						<label htmlFor="email">Email</label>
+						<input
+							id="email"
+							type="email"
+							onChange={handleChange}
+							defaultValue={isLogin?.email}
+							name="email"
+						/>
+						<label htmlFor="phone">Email</label>
+						<input
+							id="phone"
+							type="number"
+							onChange={handleChange}
+							name="phone"
+							placeholder="Enter your phone number "
+						/>
+						<label htmlFor="address">Address</label>
+						<textarea
+							name="address"
+							onChange={handleChange}
+							id="address"
+							placeholder="Enter ship address"
+						></textarea>
+						<button type="submit">Order Place</button>
+					</form>
 				) : (
-					<h1>Hell</h1>
+					<h1>Not Found any data</h1>
 				)}
 			</Modal>
 		</>

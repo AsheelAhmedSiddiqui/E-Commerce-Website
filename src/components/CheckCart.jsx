@@ -2,11 +2,13 @@ import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 import CartItem from "./CartItem";
 import MyHeader from "./MyHeader";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import CheckOutModal from "./CheckOutModal";
-import { auth } from "../utils/firebase";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { auth, db } from "../utils/firebase";
+import emailjs from "emailjs-com";
 function CheckCart() {
-	const { cart } = useContext(CartContext);
+	const { cart, clearCart } = useContext(CartContext);
 	const [isOpen, setIsOpen] = useState(false);
 
 	const openModal = () => setIsOpen(true);
@@ -20,17 +22,58 @@ function CheckCart() {
 		0
 	);
 
-	const checkOutOrder = async (values) => {
+	const checkOutOrder = async (event, values) => {
+		event.preventDefault();
+		const { name, email, address } = values;
 		const orderObj = {
 			...values,
 			totalItemsPrice,
 			totalItemsQuantity,
+			user: {
+				userID: auth.currentUser ? auth.currentUser.uid : "guest user",
+				userName: auth.currentUser ? auth.currentUser.displayName : "guest",
+				userPhoto: auth.currentUser ? auth.currentUser.photoURL : "Guest",
+				userEmail: auth.currentUser ? auth.currentUser.email : "guest user",
+			},
 			status: "pending",
-			user:{
-				userID: auth.currentUser ? auth.currentUser.uid,
-				userPhoto: auth.currentUser ? auth.currentUser.photoURL
-			}
+			items: cart.map(
+				(data) =>
+					`Item: ${data.title}, Price: ${data.price}, Quantity: (${data.quantity})`
+			),
 		};
+		// const docRef = collection(db, "orders");
+		// addDoc(docRef, orderObj)
+		// 	.then(() => message.success("Your order is placed"))
+		// 	.catch((error) => {
+		// 		message.error("Failed to place order");
+		// 	});
+		// console.log("data chala gaya " + phone);
+
+		const templateEmail = {
+			to_name: name,
+			to_email: email,
+			order_details: `Address: ${address}, Total: ${totalItemsPrice}, Items Quantity: ${totalItemsQuantity}, Your Items: ${cart.map(
+				(data) => `Item Name${data.title}, Price: ${data.price}`
+			)} `, // The order details
+		};
+
+		emailjs
+			.send(
+				"service_623ultd", // Replace with your EmailJS Service ID
+				"template_14bp94r", // Replace with your EmailJS Template ID
+				templateEmail,
+				"lTyuv-fRcZtaSQv6b" // Replace with your EmailJS User ID
+			)
+			.then((response) => {
+				console.log("SUCCESS!", response.status, response.text);
+				message.success("Order confirmation email sent!");
+			})
+			.catch((err) => {
+				console.log("FAILED...", err);
+				message.error("Failed to send email.");
+			});
+		clearCart();
+		setTimeout(() => setIsOpen(false), 5000);
 	};
 
 	return (
@@ -40,7 +83,7 @@ function CheckCart() {
 				isOpen={isOpen}
 				handleConfirm={() => setIsOpen(true)}
 				handleCancel={() => setIsOpen(false)}
-				// orderConfirm={checkOutOrder}
+				checkOutOrder={checkOutOrder}
 			/>
 			<div className="flex gap-10 mx-auto w-3/4 mt-6">
 				<div className="quantity flex items-center justify-center h-28 rounded border border-gray-500 w-[100%]  flex-col">
